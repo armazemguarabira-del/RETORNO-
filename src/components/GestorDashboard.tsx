@@ -5864,7 +5864,10 @@ export default function GestorDashboard({
                                       const diff = (i.rePhysicalQty !== undefined ? i.rePhysicalQty : i.physicalQty) - (i.fiscalQty ?? 0);
                                       return (
                                         <div key={i.productCode} className="flex justify-between text-xs text-amber-950 font-medium">
-                                          <span>{i.productDescription}</span>
+                                          <span>
+                                            {i.productCode && <span className="font-mono text-amber-900 font-bold mr-1">[{i.productCode}]</span>}
+                                            {i.productDescription}
+                                          </span>
                                           <span className="font-bold font-mono">+{diff} cx (Sobra)</span>
                                         </div>
                                       );
@@ -5873,7 +5876,10 @@ export default function GestorDashboard({
                                       const diff = (a.rePhysicalQty !== undefined ? a.rePhysicalQty : a.physicalQty) - (a.fiscalQty ?? 0);
                                       return (
                                         <div key={a.assetId} className="flex justify-between text-xs text-blue-900 font-medium">
-                                          <span>{a.assetName}</span>
+                                          <span>
+                                            {a.assetId && <span className="font-mono text-blue-900 font-bold mr-1">[{a.assetId}]</span>}
+                                            {a.assetName}
+                                          </span>
                                           <span className="font-bold font-mono">+{diff} un (Ativo)</span>
                                         </div>
                                       );
@@ -6176,7 +6182,10 @@ export default function GestorDashboard({
                                       const diff = (i.fiscalQty ?? 0) - (i.rePhysicalQty !== undefined ? i.rePhysicalQty : i.physicalQty);
                                       return (
                                         <div key={i.productCode} className="flex justify-between text-xs text-red-950 font-semibold">
-                                          <span>{i.productDescription}</span>
+                                          <span>
+                                            {i.productCode && <span className="font-mono text-red-900 font-bold mr-1">[{i.productCode}]</span>}
+                                            {i.productDescription}
+                                          </span>
                                           <span className="font-bold font-mono">-{diff} cx (Falta)</span>
                                         </div>
                                       );
@@ -6185,7 +6194,10 @@ export default function GestorDashboard({
                                       const diff = (a.fiscalQty ?? 0) - (a.rePhysicalQty !== undefined ? a.rePhysicalQty : a.physicalQty);
                                       return (
                                         <div key={a.assetId} className="flex justify-between text-xs text-red-900 font-semibold">
-                                          <span>{a.assetName}</span>
+                                          <span>
+                                            {a.assetId && <span className="font-mono text-red-900 font-bold mr-1">[{a.assetId}]</span>}
+                                            {a.assetName}
+                                          </span>
                                           <span className="font-bold font-mono">-{diff} un (Ativo)</span>
                                         </div>
                                       );

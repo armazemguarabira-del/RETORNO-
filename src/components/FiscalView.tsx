@@ -5070,6 +5070,7 @@ export default function FiscalView({
                     // Get list of surpluses
                     const surpluses = [
                       ...audit.items.filter(i => (i.rePhysicalQty !== undefined ? i.rePhysicalQty : i.physicalQty) > (i.fiscalQty ?? 0)).map(i => ({
+                        code: i.productCode,
                         description: i.productDescription,
                         qty: (i.rePhysicalQty !== undefined ? i.rePhysicalQty : i.physicalQty) - (i.fiscalQty ?? 0),
                         unit: 'cx',
@@ -5087,6 +5088,7 @@ export default function FiscalView({
                         const comodato = a.comodatoQty ?? 0;
                         const recolha = a.recolhaQty ?? 0;
                         return {
+                          code: a.assetId,
                           description: a.assetName,
                           qty: phys - fisc + comodato - recolha,
                           unit: 'un',
@@ -5102,6 +5104,7 @@ export default function FiscalView({
                     // Get list of deficits
                     const deficits = [
                       ...audit.items.filter(i => (i.rePhysicalQty !== undefined ? i.rePhysicalQty : i.physicalQty) < (i.fiscalQty ?? 0)).map(i => ({
+                        code: i.productCode,
                         description: i.productDescription,
                         qty: (i.fiscalQty ?? 0) - (i.rePhysicalQty !== undefined ? i.rePhysicalQty : i.physicalQty),
                         unit: 'cx',
@@ -5119,6 +5122,7 @@ export default function FiscalView({
                         const comodato = a.comodatoQty ?? 0;
                         const recolha = a.recolhaQty ?? 0;
                         return {
+                          code: a.assetId,
                           description: a.assetName,
                           qty: Math.abs(phys - fisc + comodato - recolha),
                           unit: 'un',
@@ -5192,7 +5196,10 @@ export default function FiscalView({
                                   <div key={idx} className="flex justify-between items-center text-xs text-amber-950 font-medium">
                                     <div className="flex items-center space-x-1.5">
                                       <span className="text-[9px] bg-amber-200 text-amber-900 font-black px-1 rounded font-mono">{s.type}</span>
-                                      <span>{s.description}</span>
+                                      <span>
+                                        {s.code && <span className="font-mono text-amber-900 font-bold mr-1">[{s.code}]</span>}
+                                        {s.description}
+                                      </span>
                                     </div>
                                     <span className="font-mono font-bold">+{s.qty} {s.unit}</span>
                                   </div>
@@ -5237,7 +5244,10 @@ export default function FiscalView({
                                   <div key={idx} className="flex justify-between items-center text-xs text-red-950 font-medium">
                                     <div className="flex items-center space-x-1.5">
                                       <span className="text-[9px] bg-red-200 text-red-900 font-black px-1 rounded font-mono">{d.type}</span>
-                                      <span>{d.description}</span>
+                                      <span>
+                                        {d.code && <span className="font-mono text-red-900 font-bold mr-1">[{d.code}]</span>}
+                                        {d.description}
+                                      </span>
                                     </div>
                                     <span className="font-mono font-bold font-bold">-{d.qty} {d.unit}</span>
                                   </div>
@@ -5517,7 +5527,7 @@ export default function FiscalView({
                                       return acc;
                                     }, 0);
 
-                                    const descFalta = deficits.map(d => `${d.qty}x ${d.description}`).join(', ');
+                                    const descFalta = deficits.map(d => `${d.qty}x ${d.code ? `[${d.code}] ` : ''}${d.description}`).join(', ');
                                     const motoristaNome = getDriverName(audit.driverId);
 
                                     const novoVale = {
@@ -5566,8 +5576,8 @@ export default function FiscalView({
 
                             <p className="text-[11px] text-slate-600 leading-relaxed">
                               {deficits.length > 0 
-                                ? `Detectada Falta Física de ${deficits.map(d => `${d.qty} ${d.unit} de ${d.description}`).join(', ')}. Ação sugerida: Gerar e emitir Vale de Desconto para o motorista/ajudante responsável ou coletar justificativa assinada pelo fiscal de expedição.`
-                                : `Detectada Sobra Física de ${surpluses.map(s => `${s.qty} ${s.unit} de ${s.description}`).join(', ')}. Ação sugerida: Identificar e inserir o código NB do cliente, alinhar data estimada de entrega e encaminhar ao gestor para efetivar baixa física.`
+                                ? `Detectada Falta Física de ${deficits.map(d => `${d.qty} ${d.unit} de ${d.code ? `[${d.code}] ` : ''}${d.description}`).join(', ')}. Ação sugerida: Gerar e emitir Vale de Desconto para o motorista/ajudante responsável ou coletar justificativa assinada pelo fiscal de expedição.`
+                                : `Detectada Sobra Física de ${surpluses.map(s => `${s.qty} ${s.unit} de ${s.code ? `[${s.code}] ` : ''}${s.description}`).join(', ')}. Ação sugerida: Identificar e inserir o código NB do cliente, alinhar data estimada de entrega e encaminhar ao gestor para efetivar baixa física.`
                               }
                             </p>
 
@@ -8903,7 +8913,10 @@ export default function FiscalView({
                           const diff = (p.rePhysicalQty !== undefined ? p.rePhysicalQty : p.physicalQty) - (p.fiscalQty ?? 0);
                           return (
                             <div key={p.productCode} className="flex justify-between text-xs text-slate-800 font-medium">
-                              <span>{p.productDescription}</span>
+                              <span>
+                                {p.productCode && <span className="font-mono text-amber-900 font-bold mr-1">[{p.productCode}]</span>}
+                                {p.productDescription}
+                              </span>
                               <span className="font-mono font-bold text-emerald-700">+{diff} cx (P.A.)</span>
                             </div>
                           );
@@ -8912,7 +8925,10 @@ export default function FiscalView({
                           const diff = (a.rePhysicalQty !== undefined ? a.rePhysicalQty : a.physicalQty) - (a.fiscalQty ?? 0);
                           return (
                             <div key={a.assetId} className="flex justify-between text-xs text-slate-800 font-medium">
-                              <span>{a.assetName}</span>
+                              <span>
+                                {a.assetId && <span className="font-mono text-blue-900 font-bold mr-1">[{a.assetId}]</span>}
+                                {a.assetName}
+                              </span>
                               <span className="font-mono font-bold text-emerald-700">+{diff} un (A.G.)</span>
                             </div>
                           );
